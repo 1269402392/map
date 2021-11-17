@@ -18,9 +18,9 @@
           :rules="[{ required: true, message: '请填写密码' }]"
       />
       <div style="margin: 16px;">
-        <van-button  block type="primary" native-type="submit">登 陆</van-button>
+        <van-button  block type="primary" native-type="submit">提 交</van-button>
       </div>
-      <div class="register-info" @click="goRegister">还没有账号,去注册~</div>
+      <div class="register-info" @click="goLogin">已有账号,去登陆~</div>
     </van-form>
   </div>
 </template>
@@ -31,7 +31,7 @@ export default {
   name: "Register",
   data() {
     return {
-      navInfo: { title: '账号登陆' },
+      navInfo: { title: '账号注册' },
       user: {
         username: '',
         password: ''
@@ -40,43 +40,41 @@ export default {
   },
   methods: {
     onSubmit() {
-      this.$axios.post('admin/login',this.user).then(res => {
+      this.$axios.post('admin/registered',this.user).then(res => {
         console.log(res)
         if(res.status !== 200) return this.$toast.fail(res.description)
         this.$toast.success(res.description)
-        this.$router.push('/home')
-        localStorage.token = res.body.token
+        this.$router.replace('/login')
       })
     },
-    goRegister() {
-      this.$router.push('/register')
-    },
+    goLogin() {
+      this.$router.replace('/login')
+    }
   },
-
   components: {NavBar}
 }
 </script>
 
 <style lang="less" scoped>
-.register{
-  *{
-    font-size: 14px;
-  }
-  .van-nav-bar__title{
-    font-size: 14px;
-  }
-  /deep/.van-nav-bar__left *{
-    color: black;
-  }
-  .van-form{
-    margin-top: 20px;
-    .register-info{
-      font-size: 13px;
-      width: 120px;
-      text-align: center;
-      margin: auto;
-      color: #7c7878;
+  .register{
+    *{
+      font-size: 14px;
+    }
+    .van-nav-bar__title{
+      font-size: 14px;
+    }
+    /deep/.van-nav-bar__left *{
+      color: black;
+    }
+    .van-form{
+      margin-top: 20px;
+      .register-info{
+        font-size: 13px;
+        width: 120px;
+        text-align: center;
+        margin: auto;
+        color: #7c7878;
+      }
     }
   }
-}
 </style>

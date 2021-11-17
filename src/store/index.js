@@ -8,6 +8,7 @@ export default new Vuex.Store({
     cityName: '' || localStorage.cityName,
     cityId: '' || localStorage.cityId,
     active: 0, //tabBar记录当前选中
+    collectList: []
   },
   mutations: {
     add(state, payload) {
@@ -16,6 +17,16 @@ export default new Vuex.Store({
     },
     addActive(state, payload) {
       state.active = payload
+    },
+    //添加收藏
+    addCollect(state, payload) {
+      state.collectList.push(payload)
+    },
+    //删除收藏
+    delCollect(state, payload) {
+      state.collectList = state.collectList.filter(item => {
+        return item.houseCode != payload.houseCode
+      })
     }
   }
 })

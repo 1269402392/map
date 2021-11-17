@@ -31,7 +31,7 @@ export default {
     ...mapMutations(['add']),
     lineClick(line) {
       this.add(line)
-      this.$router.push('/home')
+      this.$router.go(-1)
     },
   },
   async created() {

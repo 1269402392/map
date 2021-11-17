@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div class="content" @click="houseClick">
     <div class="img-box">
       <img :src="'http://122.112.218.153:8095' + house.houseImg">
     </div>
@@ -25,6 +25,16 @@ export default {
       default: {}
     }
   },
+  methods: {
+    houseClick() {
+      this.$router.push({
+        path: '/houseInfo',
+        query: {
+          id: this.house.houseCode
+        }
+      })
+    }
+  }
 }
 </script>
 
@@ -40,7 +50,7 @@ export default {
       width: 30%;
       height: 80px;
       overflow: hidden;
-      border-radius: 10px;
+      border-radius: 5px;
       margin-right: 10px;
       >img{
         width: 100px;
@@ -52,7 +62,7 @@ export default {
       display: flex;
       flex-direction: column;
       justify-content: space-around;
-      height: 100px;
+      height: 93px;
       .tag-ul{
         display: flex;
         flex-wrap: wrap;

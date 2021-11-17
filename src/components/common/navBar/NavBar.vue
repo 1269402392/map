@@ -19,5 +19,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
+/deep/.van-nav-bar{
+  position: fixed;
+  top: 0;
+  background-color: unset;
+  width: 100%;
+  z-index: 99;
+}
 </style>

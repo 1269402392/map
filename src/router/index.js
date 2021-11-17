@@ -11,32 +11,37 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('views/login/Login')
+    component: () => import('../views/login/Login')
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: () => import('../views/login/loginChildren/Register')
   },
   {
     path: '/home',
     name: 'home',
-    component: () => import('views/home/Home'),
+    component: () => import('../views/home/Home'),
   },
   {
     path: '/chooseCity',
     name: 'chooseCity',
-    component: () => import('views/home/homeChildren/chooseCity'),
+    component: () => import('../views/home/homeChildren/chooseCity'),
   },
   {
     path: '/publish',
     name: 'publish',
-    component: () => import('views/publish/Publish')
+    component: () => import('../views/publish/Publish')
   },
   {
     path: '/searchArea',
     name: 'searchArea',
-    component: () => import('views/publish/publishChild/SearchArea')
+    component: () => import('../views/publish/publishChild/SearchArea')
   },
   {
     path: '/map',
     name: 'map',
-    component: () => import('views/home/homeChildren/Map')
+    component: () => import('../views/home/homeChildren/Map')
   },
   {
     path: '/houseInfo',
@@ -56,8 +61,13 @@ const routes = [
   {
     path: '/mine',
     name: 'mine',
-    component: () => import('../views/mine/Mine')
+    component: () => import('../views/mine/Mine'),
   },
+  {
+    path: '/collect',
+    name: 'collect',
+    component: () => import('../views/mine/mineChildren/CollectHouse')
+  }
 ]
 
 const router = new VueRouter({

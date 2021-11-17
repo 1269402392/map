@@ -1,7 +1,6 @@
 import axios from "axios";
 import Vue from 'vue';
 import { Toast } from 'vant';
-
 Vue.use(Toast);
 const instance = axios.create({
   baseURL: 'http://122.112.218.153:8095/',
@@ -20,7 +19,7 @@ instance.interceptors.response.use(config => {
   // if(config.data.status === 200) {
   //   Toast.loading({
   //     message: '加载中...',
-  //     forbidClick: true,
+  //     forbidClick: false,
   //   });
   // }
   return config.data

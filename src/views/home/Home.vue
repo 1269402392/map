@@ -2,16 +2,7 @@
   <div class="home">
     <div class="wrapper" ref="wrapper">
       <!-- 搜索区域 -->
-      <van-search
-          class="search"
-          show-action
-          :label="cityName"
-          @click="searchClick"
-          placeholder="点击选择地址">
-        <template #action>
-          <van-icon name="wap-home-o" @click="homeClick"/>
-        </template>
-      </van-search>
+      <search-bar/>
       <!-- 轮播图 -->
       <Banners :banners="banners"/>
       <!-- 功能区域 -->
@@ -67,10 +58,11 @@
 
 <script>
 import { mapState } from 'vuex'
+import SearchBar from "../../components/content/SearchBar";
 import Banners from "../../components/common/banners/Banners";
 export default {
   name: 'Home',
-  components: {Banners},
+  components: {SearchBar, Banners},
   data() {
     return {
       banners: [],
@@ -101,21 +93,9 @@ export default {
     }
   },
   methods: {
-    searchClick() {
-      this.$router.push('/chooseCity')
-    },
     funcClick(path) {
       this.$router.push(path)
     },
-    homeClick() {
-      this.$router.push(({
-        path: '/map',
-        query: {
-          cityId: this.cityId,
-          cityName: this.cityName
-        }
-      }))
-    }
   },
   computed: {
     ...mapState({
