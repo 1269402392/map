@@ -64,7 +64,7 @@
       <div class="content">
         <div class="title-info">
           <div class="info-left">
-            <img src="https://img01.yzcdn.cn/vant/cat.jpeg">
+            <img alt="none" src="https://img01.yzcdn.cn/vant/cat.jpeg">
             <div class="left-txt">
               <p>王女士</p>
               <div>
@@ -81,7 +81,7 @@
     <!-- 猜你喜欢 -->
     <div class="like">
       <div class="title">猜你喜欢</div>
-      <sheet-content v-for="item in likeList" :house="item"/>
+      <sheet-content v-for="item in likeList" :key="item.imgSrc" :house="item"/>
     </div>
     <!-- TabBar -->
     <ul class="tab-bar">
@@ -116,7 +116,7 @@ export default {
     }
   },
   async activated() {
-    const { body : res } = await this.$axios.get('houses/' + this.$route.query.id)
+    const { body : res } = await this.$axios.get('houses/' + this.$route.query.house.houseCode)
     this.houseInfo = res
     this.supportingList = res.supporting
     this.navInfo.title = res.community
@@ -128,7 +128,7 @@ export default {
       let index = Math.ceil(Math.random() * 5) - 1
       console.log(index)
       this.likeList.push(res.body.list[index])
-      if(index != 0) {
+      if(index !== 0) {
         this.likeList.push(res.body.list[index - 1])
       }
     })
@@ -159,7 +159,7 @@ export default {
     },
     collectClick() {
       console.log('执行')
-      let houseInfo = this.houseInfo
+      let houseInfo = this.$route.query.house
       if(this.findCollectHouse(houseInfo)) {
         this.delCollect(houseInfo)
         this.isCollect = false
@@ -206,7 +206,7 @@ export default {
     background-color: rgba(245,244,246,1);
     //height: 100vh;
     .mating{
-      padding: 0px 15px;
+      padding: 0 15px;
       background-color: white;
       .title{
         font-weight: bold;
@@ -301,10 +301,10 @@ export default {
     }
     .house-div{
       background-color: white;
-      padding: 10px 15px 0px 15px;
+      padding: 10px 15px 0 15px;
       .title{
-        padding: 0px 0px 15px 0px;
-        margin: 0px 0px 10px 0px;
+        padding: 0 0 15px 0;
+        margin: 0 0 10px 0;
         border-bottom: 1px solid #eeeeee;
         >div:first-child{
           font-size: 14px;
@@ -314,7 +314,7 @@ export default {
           display: flex;
           li{
             &:first-child{
-              margin-left: 0px;
+              margin-left: 0;
             }
             &:nth-child(even){
               color: rgba(87,184,145,1);
@@ -324,7 +324,7 @@ export default {
             margin-left: 5px;
             flex-wrap: wrap;
             //width: 40px;
-            padding: 0px 5px;
+            padding: 0 5px;
             text-align: center;
             border-radius: 5px;
             color: rgba(102,194,207,1);
@@ -338,8 +338,8 @@ export default {
         display: flex;
         justify-content: space-around;
         border-bottom: 2px solid #eeeeee;
-        padding: 0px 0px 15px 0px;
-        margin: 10px 0px;
+        padding: 0 0 15px 0;
+        margin: 10px 0;
         .page-box{
           text-align: center;
           *{

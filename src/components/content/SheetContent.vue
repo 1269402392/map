@@ -30,7 +30,7 @@ export default {
       this.$router.push({
         path: '/houseInfo',
         query: {
-          id: this.house.houseCode
+          house: this.house
         }
       })
     }

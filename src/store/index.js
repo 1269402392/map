@@ -25,7 +25,7 @@ export default new Vuex.Store({
     //删除收藏
     delCollect(state, payload) {
       state.collectList = state.collectList.filter(item => {
-        return item.houseCode != payload.houseCode
+        return item.houseCode !== payload.houseCode
       })
     }
   }
