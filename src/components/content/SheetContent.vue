@@ -1,7 +1,7 @@
 <template>
   <div class="content" @click="houseClick">
     <div class="img-box">
-      <img :src="'http://122.112.218.153:8095' + house.houseImg">
+      <img :src="'http://122.112.218.153:8095' + house.houseImg" @load="imgLoad">
     </div>
     <div class="right">
       <div class="title">
@@ -19,6 +19,11 @@
 <script>
 export default {
   name: "SheetContent",
+  data() {
+    return {
+
+    }
+  },
   props: {
     house: {
       type: Object,
@@ -33,6 +38,9 @@ export default {
           house: this.house
         }
       })
+    },
+    imgLoad() {
+      this.$bus.emit('imgLoadOver')
     }
   }
 }

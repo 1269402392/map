@@ -154,24 +154,20 @@ export default {
   },
   methods: {
     ...mapMutations(['addCollect','delCollect']),
-    async refresh() {
-
-    },
     collectClick() {
       console.log('执行')
       let houseInfo = this.$route.query.house
       if(this.findCollectHouse(houseInfo)) {
         this.delCollect(houseInfo)
         this.isCollect = false
+        this.$toast.fail('取消收藏')
       } else {
         this.addCollect(houseInfo)
         this.isCollect = true
+        this.$toast.success('收藏成功')
       }
     },
     findCollectHouse(house) {
-      // console.log('-----')
-      // console.log('collectList',this.collectList)
-      // console.log('house',house)
       let flag = false
       this.collectList.forEach(item => {
         if(item.houseCode === house.houseCode) {

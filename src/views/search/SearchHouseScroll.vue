@@ -36,21 +36,23 @@
         </van-dropdown-item>
       </van-dropdown-menu>
     </div>
-    <van-pull-refresh
-        v-model="isLoading"
-        success-text="刷新成功"
-        @refresh="onRefresh">
-      <van-list
-          v-model="loading"
-          :finished="finished"
-          finished-text="没有更多了"
-          @load="onLoad">
+
+    <Scroll ref="scroll" class="scroll-search"
+            @pullingDown="searchPullDown"
+            @pullingUp="searchPullUp"
+            @enterThreshold="enterShould"
+            @leaveThreshold="leaveShould">
+      <div class="list">
+        <div class="pulldown-wrapper">
+          <div v-html="tipText"></div>
+        </div>
         <div v-if="houseList.length !== 0" class="house-list">
           <sheet-content :house="item" v-for="item in houseList"/>
         </div>
-      </van-list>
-      <van-empty v-if="houseList.length === 0" description="空空如也" />
-    </van-pull-refresh>
+        <van-empty v-if="houseList.length === 0" description="空空如也" />
+      </div>
+    </Scroll>
+
     <tab-bar/>
   </div>
 </template>
@@ -67,9 +69,10 @@ export default {
       isLoading: false,//下拉加载更多
       loading: false, // 上拉加载
       finished: false,// (上拉)是否还有更多数据
-      pageNum: 1,
-      pageSize: 5,
       timer: null,
+      pageNum: 1,
+      pageSize: 10,
+      tipText: '',
       columnsArea: [
         {
           label: '请选择',
@@ -102,26 +105,35 @@ export default {
     };
   },
   methods: {
-    //刷新
-    onRefresh() {
-      this.isLoading = false
-      this.pageNum = 1
-      this.houseList = []
-      this.refresh();
+    //添加下拉提示 - scroll
+    enterShould(txt) {
+      this.tipText = txt
     },
-    //上拉刷新方法
-    // 1 5  6 11
-    onLoad() {
-      this.loading = false;
+    //添加松手提示 - scroll
+    leaveShould(txt) {
+      this.tipText = txt
+    },
+    searchPullDown() {
+      this.tipText = '努力加载中...'
+      setTimeout(async () => {
+        await this.refreshBtn();
+        this.tipText = '成功!'
+        this.$refs.scroll.finishPullDown()
+        this.$refs.scroll.refresh();
+      }, 1500)
+
+    },
+    searchPullUp() {
       this.refresh();
+      this.$refs.scroll.finishPullUp()
     },
     //确定按钮
     onConfirm() {
       this.refreshBtn();
       this.allOnCancel();
     },
+    //子组件传过来筛选的条件
     conRef(...params) {
-      console.log('params',params)
       this.filterObj.characteristic = params[0].characteristic.value
       this.filterObj.floor = params[0].floor.value
       this.filterObj.oriented = params[0].oriented.value
@@ -131,7 +143,6 @@ export default {
     },
     //区域下拉框改变
     handleArea(picker, value, index) {
-      console.log(value, index)
       if(value[0] === '区域') {
         if(index === 2) {
           const area = value[value.length - 1]
@@ -168,13 +179,14 @@ export default {
     handleRent(picker, value, index) {
       this.filterObj.rentType = value.value
     },
+    //价格下拉框改变
     handlePrice(picker, value) {
       this.filterObj.price = value.value
     },
+    //下拉刷新
     refresh() {
       if(this.timer) clearTimeout(this.timer)
       this.timer = setTimeout(() => {
-        console.log('refresh',this.pageNum)
         this.$toast.loading('玩命加载中');
         this.pageNum++;
         this.filterObj.start = (this.pageNum - 1) * this.pageSize + 1
@@ -193,16 +205,16 @@ export default {
         })
       }, 100)
     },
-    refreshBtn() {
+    //筛选条件确定按钮刷新
+    async refreshBtn() {
       this.pageNum = 1;
       this.filterObj.start = (this.pageNum - 1) * this.pageSize + 1
       this.filterObj.end = (this.pageNum - 1) * this.pageSize + this.pageSize
       this.filterObj.cityId = this.$store.state.cityId
-      this.$axios.get('houses', {
+      const {body : res } = await this.$axios.get('houses', {
         params: this.filterObj
-      }).then(res => {
-        this.houseList = res.body.list
       })
+      this.houseList = res.list
     },
     //收起下拉框
     onCancel1() {
@@ -225,6 +237,13 @@ export default {
     }
   },
   activated() {
+    this.$bus.on('imgLoadOver',() => {
+      if(this.timer) clearTimeout(this.timer)
+      this.timer = setTimeout(() => {
+        this.$refs.scroll.refresh();
+        console.log('search-scroll-refresh执行了')
+      }, 400)
+    })
     //统一清空所有对象的值
     Object.keys(this.filterObj).forEach(item => {
       if(item != 'start' && item != 'end') {
@@ -237,7 +256,6 @@ export default {
     this.refresh(); //请求展示数据列表
     // 请求筛选信息
     const { body : res } = await this.$axios.get('houses/condition?id=AREA%7C88cff55c-aaa4-e2e0')
-    // console.log('res',res)
     this.columnsArea.push(res.area,res.subway)
     this.columnsRent = res.rentType
     this.columnsPrice = res.price
@@ -260,6 +278,19 @@ export default {
 </script>
 
 <style lang="less" scoped>
+  .pulldown-wrapper{
+    position: absolute;
+    width :100%;
+    padding :20px;
+    font-size: 15px;
+    box-sizing:border-box;
+    transform :translateY(-100%) translateZ(0);
+    text-align :center;
+    color: black;
+  }
+  .scroll-search{
+    height: calc(100vh - 152px);
+  }
   .search-box {
     position: unset;
     background-color: white;
@@ -272,7 +303,6 @@ export default {
         padding: 0px 10px;
       }
     }
-
 
     /deep/ .van-icon {
       color: black;

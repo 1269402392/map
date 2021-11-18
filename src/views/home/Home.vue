@@ -1,58 +1,53 @@
 <template>
   <div class="home">
-    <div class="wrapper" ref="wrapper">
-      <!-- 搜索区域 -->
-      <search-bar/>
-      <!-- 轮播图 -->
-      <Banners :banners="banners"/>
-      <!-- 功能区域 -->
-      <ul class="fun-box">
-        <li v-for="item in funcList" @click="funcClick(item.path)">
-          <div class="icon">
-            <van-icon :name="item.icon" />
+    <!-- 搜索区域 -->
+    <search-bar :class="{unsetBack : isBgUnset}"/>
+    <Scroll ref="scroll"
+            @scrollPosition="homePosition" @pullingDown="pullDown">
+      <div class="home-content">
+        <!-- 轮播图 -->
+        <Banners :banners="banners"/>
+        <!-- 功能区域 -->
+        <ul class="fun-box">
+          <li v-for="item in funcList" @click="funcClick(item.path)">
+            <div class="icon">
+              <van-icon :name="item.icon" />
+            </div>
+            <div class="txt">{{item.txt}}</div>
+          </li>
+        </ul>
+        <!-- 租房小组 -->
+        <div class="group">
+          <div class="title">
+            <h5>租房小组</h5>
+            <span>更多</span>
           </div>
-          <div class="txt">{{item.txt}}</div>
-        </li>
-      </ul>
-      <!-- 租房小组 -->
-      <div class="group">
-        <div class="title">
-          <h5>租房小组</h5>
-          <span>更多</span>
-        </div>
-        <ul class="group-ul">
-          <li v-for="item in groupList">
-            <div class="left">
-              <h5>{{item.title}}</h5>
-              <span>{{ item.desc }}</span>
-            </div>
-            <van-image
-                width="50"
-                height="50"
-                border-radius="50%"
-                :src="'http://122.112.218.153:8095' + item.imgSrc"/>
-          </li>
-        </ul>
-      </div>
-      <!-- 最新资讯 -->
-      <div class="news">
-        <h5 class="title">最新资讯</h5>
-        <ul>
-          <li v-for="item in newList">
-            <img :src="'http://122.112.218.153:8095' + item.imgSrc"/>
-            <div class="txt">
-              <div class="top-txt">{{ item.title }}</div>
-              <div class="txt-info">
-                <span>{{ item.from }}</span>
-                <span>{{ item.date }}</span>
+          <ul class="group-ul">
+            <li v-for="item in groupList">
+              <div class="left">
+                <h5>{{item.title}}</h5>
+                <span>{{ item.desc }}</span>
               </div>
-            </div>
-          </li>
-        </ul>
+              <van-image
+                  @load="imgLoad"
+                  width="50"
+                  height="50"
+                  border-radius="50%"
+                  :src="'http://122.112.218.153:8095' + item.imgSrc"/>
+            </li>
+          </ul>
+        </div>
+        <!-- 最新资讯 -->
+        <div class="news">
+          <h5 class="title">最新资讯</h5>
+          <div class="ul">
+            <news-item  v-for="item in newList" :item="item"/>
+          </div>
+        </div>
       </div>
-      <!-- TabBar-->
-      <tab-bar/>
-    </div>
+    </Scroll>
+    <!-- TabBar-->
+    <tab-bar/>
   </div>
 </template>
 
@@ -60,12 +55,15 @@
 import { mapState } from 'vuex'
 import SearchBar from "../../components/content/SearchBar";
 import Banners from "../../components/common/banners/Banners";
+import NewsItem from "../news/newsChildren/NewsItem";
 export default {
   name: 'Home',
-  components: {SearchBar, Banners},
+  components: {NewsItem, SearchBar, Banners},
   data() {
     return {
+      tipText: '',
       banners: [],
+      timer: null,
       funcList: [
         {
           icon: 'wap-home-o',
@@ -90,12 +88,27 @@ export default {
       ],
       groupList: [],
       newList: [],
+      isBgUnset: true,
     }
+  },
+  mounted() {
   },
   methods: {
     funcClick(path) {
       this.$router.push(path)
     },
+    imgLoad() {
+      if(this.timer) clearTimeout(this.timer)
+      this.timer = setTimeout(() => {
+        this.$refs.scroll.refresh();
+      }, 500)
+    },
+    homePosition(position) {
+      this.isBgUnset = !(-position.y > 178)
+    },
+    pullDown() {
+      this.$refs.scroll.finishPullDown()
+    }
   },
   computed: {
     ...mapState({
@@ -104,10 +117,12 @@ export default {
     })
   },
   async created() {
-    const data = await this.$axios.get('home/swiper')
-    this.banners = data.body
-    const res = await this.$axios.get('home/groups')
-    this.groupList = res.body
+    this.$axios.get('home/swiper').then(res => {
+      this.banners = res.body
+    })
+    this.$axios.get('home/groups').then(res => {
+      this.groupList = res.body
+    })
     const result = await this.$axios.get('home/news')
     this.newList = result.body
   }
@@ -115,15 +130,13 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .home {
-    height: 100%;
+  .home{
     background-color: rgba(245,244,246,1);
-    padding-bottom: 40px;
     .fun-box{
       background: white;
       display: flex;
       justify-content: space-around;
-      padding: 15px 0px;
+      padding: 15px 0;
       li{
         text-align: center;
         >.icon{
@@ -155,7 +168,7 @@ export default {
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
-        padding: 0px 8px;
+        padding: 0 8px;
         li{
           display: flex;
           width: 42%;
@@ -185,8 +198,8 @@ export default {
       .title{
         font-size: 14px;
       }
-      >ul{
-        >li{
+      >.ul{
+        >.news-item{
           display: flex;
           justify-content: space-between;
           margin-top: 10px;
@@ -219,13 +232,14 @@ export default {
       }
     }
   }
-
+  .unsetBack{
+    background-color: unset;
+  }
   .search{
     position: absolute;
     top: 0;
     z-index: 1;
     width: 100%;
-    background-color: unset;
     .van-search__content{
       height: 30px;
       line-height: 30px;

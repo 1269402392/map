@@ -45,7 +45,6 @@ export default {
   top: 0;
   z-index: 1;
   width: 100%;
-  background-color: unset;
   .van-search__content{
     height: 30px;
     line-height: 30px;

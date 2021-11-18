@@ -1,9 +1,11 @@
 <template>
   <div class="news">
     <nav-bar :nav-info="navInfo"/>
-    <div class="news-list" >
-      <news-item :item="item" v-for="item in newList" :key="item.id"/>
-    </div>
+    <Scroll @pullingDown="newPullDown" ref="scroll">
+      <div class="news-list" >
+        <news-item :item="item" v-for="item in newList" :key="item.id"/>
+      </div>
+    </Scroll>
     <tab-bar/>
   </div>
 </template>
@@ -19,7 +21,11 @@ export default {
       newList: []
     }
   },
-
+  methods: {
+    newPullDown() {
+      this.$refs.scroll.finishPullDown()
+    }
+  },
   activated() {
     this.$axios.get(`http://122.112.218.153:8095/home/news?area=${this.$store.state.cityId}`).then(res => {
       this.newList = res.body

@@ -3,24 +3,26 @@
     <header>
       <img src="../../assets/img/newli.jpg">
     </header>
+
     <section>
-      <div class="profile">
-        <div class="head">
-          <img src="../../assets/img/gougousuisui.jpg">
+        <div class="profile">
+          <div class="head">
+            <img src="../../assets/img/gougousuisui.jpg">
+          </div>
+          <div class="head-info">
+            <div class="title">故河十九年春</div>
+            <van-button block round  size="mini" type="primary" @click="back">退出</van-button>
+            <span class="update-info">编辑个人资料<van-icon name="play" /></span>
+          </div>
         </div>
-        <div class="head-info">
-          <div class="title">故河十九年春</div>
-          <van-button block round  size="mini" type="primary" @click="back">退出</van-button>
-          <span class="update-info">编辑个人资料<van-icon name="play" /></span>
-        </div>
-      </div>
-      <ul class="menu">
-        <li v-for="item in menuList" @click="goPage(item.path)">
-          <van-icon :name="item.icon" />
-          <span>{{ item.label }}</span>
-        </li>
-      </ul>
-    </section>
+        <ul class="menu">
+          <li v-for="item in menuList" @click="goPage(item.path)">
+            <van-icon :name="item.icon" />
+            <span>{{ item.label }}</span>
+          </li>
+        </ul>
+      </section>
+
     <footer>
       <img src="../../assets/img/hellohaoke.png">
     </footer>
@@ -73,7 +75,8 @@ export default {
     },
     goPage(path) {
       this.$router.push(path)
-    }
+    },
+
   }
 }
 </script>

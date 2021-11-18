@@ -51,7 +51,7 @@ const routes = [
   {
     path: '/searchHouse',
     name: 'searchHouse',
-    component: () => import('../views/search/SearchHouse')
+    component: () => import('../views/search/SearchHouseScroll')
   },
   {
     path: '/news',
@@ -67,7 +67,7 @@ const routes = [
     path: '/collect',
     name: 'collect',
     component: () => import('../views/mine/mineChildren/CollectHouse')
-  }
+  },
 ]
 
 const router = new VueRouter({
